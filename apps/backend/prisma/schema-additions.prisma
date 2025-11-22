@@ -1,0 +1,525 @@
+// ============================================
+// NEW MODELS FOR ENHANCED MATES HR SYSTEM
+// ============================================
+
+// Notification System
+model NotificationPreference {
+  id                String   @id @default(cuid())
+  userId            String   @map("user_id")
+  channel           String   // inapp, email, push, slack
+  enabled           Boolean  @default(true)
+  quietHoursStart   String?  @map("quiet_hours_start") // HH:mm format
+  quietHoursEnd     String?  @map("quiet_hours_end")
+  categories        Json?    // Array of enabled categories
+  
+  user              User     @relation(fields: [userId], references: [id])
+  
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+  
+  @@unique([userId, channel])
+  @@map("notification_preferences")
+}
+
+// Chat/Messaging System
+model ChatThread {
+  id                String              @id @default(cuid())
+  type              ChatThreadType
+  title             String?
+  description       String?
+  createdById       String              @map("created_by_id")
+  projectId         String?             @map("project_id")
+  departmentId      String?             @map("department_id")
+  companyId         String              @map("company_id")
+  isArchived        Boolean             @default(false) @map("is_archived")
+  lastActivityAt    DateTime            @default(now()) @map("last_activity_at")
+  
+  createdBy         User                @relation("ThreadCreator", fields: [createdById], references: [id])
+  project           Project?            @relation(fields: [projectId], references: [id])
+  department        Department?         @relation(fields: [departmentId], references: [id])
+  company           Company             @relation(fields: [companyId], references: [id])
+  participants      ChatParticipant[]
+  messages          ChatMessage[]
+  
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @updatedAt @map("updated_at")
+  
+  @@index([companyId])
+  @@index([projectId])
+  @@index([lastActivityAt])
+  @@map("chat_threads")
+}
+
+model ChatParticipant {
+  id                String              @id @default(cuid())
+  threadId          String              @map("thread_id")
+  userId            String              @map("user_id")
+  role              String              @default("member") // owner, admin, member
+  lastReadAt        DateTime?           @map("last_read_at")
+  mentionCount      Int                 @default(0) @map("mention_count")
+  isMuted           Boolean             @default(false) @map("is_muted")
+  
+  thread            ChatThread          @relation(fields: [threadId], references: [id])
+  user              User                @relation(fields: [userId], references: [id])
+  
+  joinedAt          DateTime            @default(now()) @map("joined_at")
+  leftAt            DateTime?           @map("left_at")
+  
+  @@unique([threadId, userId])
+  @@index([userId])
+  @@index([lastReadAt])
+  @@map("chat_participants")
+}
+
+model ChatMessage {
+  id                String              @id @default(cuid())
+  threadId          String              @map("thread_id")
+  senderId          String              @map("sender_id")
+  contentType       MessageContentType  @map("content_type")
+  content           String              @db.Text
+  attachmentUrl     String?             @map("attachment_url")
+  attachmentName    String?             @map("attachment_name")
+  attachmentSize    Int?                @map("attachment_size")
+  replyToId         String?             @map("reply_to_id")
+  isEdited          Boolean             @default(false) @map("is_edited")
+  isDeleted         Boolean             @default(false) @map("is_deleted")
+  metadata          Json?               // reactions, mentions, etc.
+  
+  thread            ChatThread          @relation(fields: [threadId], references: [id])
+  sender            User                @relation(fields: [senderId], references: [id])
+  replyTo           ChatMessage?        @relation("MessageReplies", fields: [replyToId], references: [id])
+  replies           ChatMessage[]       @relation("MessageReplies")
+  reads             MessageRead[]
+  
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @updatedAt @map("updated_at")
+  
+  @@index([threadId, createdAt])
+  @@index([senderId])
+  @@map("chat_messages")
+}
+
+model MessageRead {
+  id                String              @id @default(cuid())
+  messageId         String              @map("message_id")
+  userId            String              @map("user_id")
+  
+  message           ChatMessage         @relation(fields: [messageId], references: [id])
+  
+  readAt            DateTime            @default(now()) @map("read_at")
+  
+  @@unique([messageId, userId])
+  @@index([userId])
+  @@map("message_reads")
+}
+
+// Screen Share System
+model ScreenShareSession {
+  id                String              @id @default(cuid())
+  requesterId       String              @map("requester_id")
+  targetId          String              @map("target_id")
+  status            ScreenShareStatus
+  sessionToken      String?             @unique @map("session_token")
+  roomId            String?             @map("room_id")
+  consentGivenAt    DateTime?           @map("consent_given_at")
+  startedAt         DateTime?           @map("started_at")
+  endedAt           DateTime?           @map("ended_at")
+  duration          Int?                // seconds
+  consentScope      String?             @map("consent_scope") // screen, window, tab
+  recordingUrl      String?             @map("recording_url")
+  metadata          Json?               // quality stats, etc.
+  
+  requester         User                @relation("Requester", fields: [requesterId], references: [id])
+  target            User                @relation("Target", fields: [targetId], references: [id])
+  
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @updatedAt @map("updated_at")
+  
+  @@index([requesterId])
+  @@index([targetId])
+  @@index([status])
+  @@map("screen_share_sessions")
+}
+
+// Email System
+model EmailTemplate {
+  id                String              @id @default(cuid())
+  key               String              @unique // welcome_email, password_reset, etc.
+  name              String
+  subject           String
+  mjmlContent       String              @db.Text @map("mjml_content")
+  htmlContent       String?             @db.Text @map("html_content")
+  textContent       String?             @db.Text @map("text_content")
+  locale            String              @default("en")
+  variables         Json?               // expected variables schema
+  isActive          Boolean             @default(true) @map("is_active")
+  companyId         String?             @map("company_id")
+  
+  company           Company?            @relation(fields: [companyId], references: [id])
+  
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @updatedAt @map("updated_at")
+  
+  @@unique([key, locale, companyId])
+  @@index([companyId])
+  @@map("email_templates")
+}
+
+model EmailLog {
+  id                String              @id @default(cuid())
+  to                String[]
+  cc                String[]            @default([])
+  bcc               String[]            @default([])
+  subject           String
+  templateKey       String?             @map("template_key")
+  htmlContent       String?             @db.Text @map("html_content")
+  textContent       String?             @db.Text @map("text_content")
+  status            String              // pending, sent, failed, bounced
+  provider          String?             // sendgrid, ses, smtp
+  providerId        String?             @map("provider_id")
+  errorMessage      String?             @map("error_message")
+  openedAt          DateTime?           @map("opened_at")
+  clickedAt         DateTime?           @map("clicked_at")
+  userId            String?             @map("user_id")
+  metadata          Json?
+  
+  user              User?               @relation(fields: [userId], references: [id])
+  
+  sentAt            DateTime?           @map("sent_at")
+  createdAt         DateTime            @default(now()) @map("created_at")
+  
+  @@index([userId])
+  @@index([status])
+  @@index([templateKey])
+  @@map("email_logs")
+}
+
+// Projects Module
+model Project {
+  id                String              @id @default(cuid())
+  code              String              @unique
+  name              String
+  description       String?             @db.Text
+  ownerId           String              @map("owner_id")
+  clientId          String?             @map("client_id")
+  status            ProjectStatus
+  priority          TaskPriority        @default(MEDIUM)
+  startDate         DateTime            @map("start_date")
+  endDate           DateTime?           @map("end_date")
+  budget            Float?
+  budgetCurrency    String?             @map("budget_currency")
+  estimatedHours    Float?              @map("estimated_hours")
+  actualHours       Float?              @map("actual_hours")
+  companyId         String              @map("company_id")
+  metadata          Json?               // custom fields
+  
+  company           Company             @relation(fields: [companyId], references: [id])
+  members           ProjectMember[]
+  milestones        Milestone[]
+  tasks             Task[]
+  worklogs          Worklog[]
+  chatThreads       ChatThread[]
+  
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @updatedAt @map("updated_at")
+  
+  @@index([companyId])
+  @@index([status])
+  @@index([ownerId])
+  @@map("projects")
+}
+
+model ProjectMember {
+  id                String              @id @default(cuid())
+  projectId         String              @map("project_id")
+  userId            String              @map("user_id")
+  role              String              // owner, manager, developer, viewer
+  allocatedHours    Float?              @map("allocated_hours")
+  hourlyRate        Float?              @map("hourly_rate")
+  
+  project           Project             @relation(fields: [projectId], references: [id])
+  user              User                @relation(fields: [userId], references: [id])
+  
+  joinedAt          DateTime            @default(now()) @map("joined_at")
+  leftAt            DateTime?           @map("left_at")
+  
+  @@unique([projectId, userId])
+  @@index([userId])
+  @@map("project_members")
+}
+
+model Milestone {
+  id                String              @id @default(cuid())
+  projectId         String              @map("project_id")
+  name              String
+  description       String?             @db.Text
+  dueDate           DateTime            @map("due_date")
+  completedAt       DateTime?           @map("completed_at")
+  status            String              @default("pending")
+  
+  project           Project             @relation(fields: [projectId], references: [id])
+  tasks             Task[]
+  
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @updatedAt @map("updated_at")
+  
+  @@index([projectId])
+  @@index([dueDate])
+  @@map("milestones")
+}
+
+model Task {
+  id                String              @id @default(cuid())
+  projectId         String              @map("project_id")
+  milestoneId       String?             @map("milestone_id")
+  parentId          String?             @map("parent_id")
+  title             String
+  description       String?             @db.Text
+  assigneeId        String?             @map("assignee_id")
+  status            TaskStatus          @default(TODO)
+  priority          TaskPriority        @default(MEDIUM)
+  estimatedMinutes  Int?                @map("estimated_minutes")
+  actualMinutes     Int?                @map("actual_minutes")
+  dueDate           DateTime?           @map("due_date")
+  completedAt       DateTime?           @map("completed_at")
+  labels            String[]            @default([])
+  boardColumn       String?             @map("board_column")
+  boardOrder        Int?                @map("board_order")
+  
+  project           Project             @relation(fields: [projectId], references: [id])
+  milestone         Milestone?          @relation(fields: [milestoneId], references: [id])
+  assignee          User?               @relation(fields: [assigneeId], references: [id])
+  parent            Task?               @relation("SubTasks", fields: [parentId], references: [id])
+  subtasks          Task[]              @relation("SubTasks")
+  worklogs          Worklog[]
+  attachments       TaskAttachment[]
+  
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @updatedAt @map("updated_at")
+  
+  @@index([projectId])
+  @@index([assigneeId])
+  @@index([status])
+  @@index([dueDate])
+  @@map("tasks")
+}
+
+model Worklog {
+  id                String              @id @default(cuid())
+  taskId            String              @map("task_id")
+  userId            String              @map("user_id")
+  projectId         String              @map("project_id")
+  startedAt         DateTime            @map("started_at")
+  endedAt           DateTime?           @map("ended_at")
+  minutes           Int
+  description       String?             @db.Text
+  screenshotUrls    String[]            @default([]) @map("screenshot_urls")
+  location          String?
+  isBillable        Boolean             @default(true) @map("is_billable")
+  
+  task              Task                @relation(fields: [taskId], references: [id])
+  user              User                @relation(fields: [userId], references: [id])
+  project           Project             @relation(fields: [projectId], references: [id])
+  
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @updatedAt @map("updated_at")
+  
+  @@index([taskId])
+  @@index([userId])
+  @@index([projectId])
+  @@index([startedAt])
+  @@map("worklogs")
+}
+
+model TaskAttachment {
+  id                String              @id @default(cuid())
+  taskId            String              @map("task_id")
+  fileName          String              @map("file_name")
+  fileUrl           String              @map("file_url")
+  fileSize          Int                 @map("file_size")
+  mimeType          String              @map("mime_type")
+  uploadedById      String              @map("uploaded_by_id")
+  
+  task              Task                @relation(fields: [taskId], references: [id])
+  
+  uploadedAt        DateTime            @default(now()) @map("uploaded_at")
+  
+  @@index([taskId])
+  @@map("task_attachments")
+}
+
+model Achievement {
+  id                String              @id @default(cuid())
+  userId            String              @map("user_id")
+  projectId         String?             @map("project_id")
+  badgeKey          String              @map("badge_key")
+  title             String
+  description       String?
+  points            Int                 @default(0)
+  iconUrl           String?             @map("icon_url")
+  metadata          Json?
+  
+  user              User                @relation(fields: [userId], references: [id])
+  
+  awardedAt         DateTime            @default(now()) @map("awarded_at")
+  
+  @@index([userId])
+  @@index([projectId])
+  @@index([badgeKey])
+  @@map("achievements")
+}
+
+// Calendar System
+model Calendar {
+  id                String              @id @default(cuid())
+  name              String
+  description       String?
+  scope             CalendarScope
+  ownerId           String              @map("owner_id")
+  companyId         String              @map("company_id")
+  color             String              @default("#2D6DF6")
+  isDefault         Boolean             @default(false) @map("is_default")
+  isPublic          Boolean             @default(false) @map("is_public")
+  
+  owner             User                @relation(fields: [ownerId], references: [id])
+  company           Company             @relation(fields: [companyId], references: [id])
+  events            Event[]
+  
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @updatedAt @map("updated_at")
+  
+  @@index([ownerId])
+  @@index([companyId])
+  @@map("calendars")
+}
+
+model Event {
+  id                String              @id @default(cuid())
+  calendarId        String              @map("calendar_id")
+  type              EventType
+  title             String
+  description       String?             @db.Text
+  location          String?
+  startAt           DateTime            @map("start_at")
+  endAt             DateTime            @map("end_at")
+  isAllDay          Boolean             @default(false) @map("is_all_day")
+  isRecurring       Boolean             @default(false) @map("is_recurring")
+  recurringRule     String?             @map("recurring_rule") // RRULE format
+  color             String?
+  metadata          Json?               // taskId, leaveId, etc.
+  
+  calendar          Calendar            @relation(fields: [calendarId], references: [id])
+  attendees         EventAttendee[]
+  reminders         EventReminder[]
+  
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @updatedAt @map("updated_at")
+  
+  @@index([calendarId])
+  @@index([startAt])
+  @@index([type])
+  @@map("events")
+}
+
+model EventAttendee {
+  id                String              @id @default(cuid())
+  eventId           String              @map("event_id")
+  userId            String              @map("user_id")
+  status            String              @default("invited") // invited, accepted, declined, tentative
+  isOrganizer       Boolean             @default(false) @map("is_organizer")
+  isOptional        Boolean             @default(false) @map("is_optional")
+  responseNote      String?             @map("response_note")
+  
+  event             Event               @relation(fields: [eventId], references: [id])
+  user              User                @relation(fields: [userId], references: [id])
+  
+  respondedAt       DateTime?           @map("responded_at")
+  createdAt         DateTime            @default(now()) @map("created_at")
+  
+  @@unique([eventId, userId])
+  @@index([userId])
+  @@index([status])
+  @@map("event_attendees")
+}
+
+model EventReminder {
+  id                String              @id @default(cuid())
+  eventId           String              @map("event_id")
+  minutesBefore     Int                 @map("minutes_before")
+  channel           String              @default("inapp") // inapp, email, push
+  
+  event             Event               @relation(fields: [eventId], references: [id])
+  
+  @@index([eventId])
+  @@map("event_reminders")
+}
+
+// Activity Telemetry (AI Analytics)
+model ActivityTelemetry {
+  id                String              @id @default(cuid())
+  userId            String              @map("user_id")
+  sessionId         String              @map("session_id")
+  timestamp         DateTime
+  keystrokes        Int                 @default(0)
+  mouseDistance     Float               @default(0) @map("mouse_distance")
+  mouseClicks       Int                 @default(0) @map("mouse_clicks")
+  scrollDistance    Float               @default(0) @map("scroll_distance")
+  windowSwitches    Int                 @default(0) @map("window_switches")
+  idleSeconds       Int                 @default(0) @map("idle_seconds")
+  activeApp         String?             @map("active_app")
+  activeCategory    String?             @map("active_category") // work, communication, browser, etc.
+  isMeeting         Boolean             @default(false) @map("is_meeting")
+  
+  createdAt         DateTime            @default(now()) @map("created_at")
+  
+  @@index([userId, timestamp])
+  @@index([sessionId])
+  @@map("activity_telemetry")
+}
+
+model ActivityAggregate {
+  id                String              @id @default(cuid())
+  userId            String              @map("user_id")
+  date              DateTime            @db.Date
+  totalKeystrokes   Int                 @map("total_keystrokes")
+  totalClicks       Int                 @map("total_clicks")
+  totalDistance     Float               @map("total_distance")
+  totalActiveTime   Int                 @map("total_active_time") // minutes
+  totalIdleTime     Int                 @map("total_idle_time") // minutes
+  totalMeetingTime  Int                 @map("total_meeting_time") // minutes
+  focusScore        Float?              @map("focus_score") // 0-100
+  productivityScore Float?              @map("productivity_score") // 0-100
+  contextSwitches   Int                 @map("context_switches")
+  afterHoursTime    Int                 @map("after_hours_time") // minutes
+  
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @updatedAt @map("updated_at")
+  
+  @@unique([userId, date])
+  @@index([date])
+  @@map("activity_aggregates")
+}
+
+model AiInsight {
+  id                String              @id @default(cuid())
+  type              String              // anomaly, prediction, recommendation
+  category          String              // productivity, wellbeing, performance
+  userId            String?             @map("user_id")
+  teamId            String?             @map("team_id")
+  severity          String              @default("info") // info, warning, critical
+  title             String
+  description       String              @db.Text
+  data              Json                // insight-specific data
+  actionUrl         String?             @map("action_url")
+  isRead            Boolean             @default(false) @map("is_read")
+  isDismissed       Boolean             @default(false) @map("is_dismissed")
+  validUntil        DateTime?           @map("valid_until")
+  
+  createdAt         DateTime            @default(now()) @map("created_at")
+  
+  @@index([userId])
+  @@index([type])
+  @@index([category])
+  @@index([createdAt])
+  @@map("ai_insights")
+}

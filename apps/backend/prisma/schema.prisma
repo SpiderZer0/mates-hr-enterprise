@@ -1,0 +1,675 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// User & Auth Models
+model User {
+  id                String      @id @default(cuid())
+  email             String      @unique
+  username          String      @unique
+  password          String
+  firstName         String
+  lastName          String
+  phoneNumber       String?
+  avatar            String?
+  isActive          Boolean     @default(true)
+  emailVerified     Boolean     @default(false)
+  lastSeenAt        DateTime?
+  preferredLanguage String      @default("EN")
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  
+  companyId         String?
+  company           Company?    @relation(fields: [companyId], references: [id])
+  
+  employee          Employee?
+  userRoles         UserRole[]
+  projectMembers    ProjectMember[]
+  sessions          Session[]
+  notifications     Notification[]
+  calendars         Calendar[]
+  events            Event[]
+  eventAttendees    EventAttendee[]
+  screenShareRequestor ScreenShareSession[] @relation("Requestor")
+  screenShareTarget    ScreenShareSession[] @relation("Target")
+  chatParticipants  ChatParticipant[]
+  chatMessages      ChatMessage[]
+  messageReads      MessageRead[]
+  aiInsights        AIInsight[]
+  activityTelemetry ActivityTelemetry[]
+  activityAggregates ActivityAggregate[]
+  emailLogs         EmailLog[]
+  
+  @@map("users")
+}
+
+model Company {
+  id                String      @id @default(cuid())
+  name              String
+  nameAr            String?
+  code              String      @unique
+  email             String?
+  phone             String?
+  address           String?
+  website           String?
+  logoUrl           String?
+  isActive          Boolean     @default(true)
+  industry          String?
+  size              String?
+  foundedYear       Int?
+  taxNumber         String?
+  registrationNumber String?
+  settings          String? // JSON stored as string
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  
+  users             User[]
+  roles             Role[]
+  departments       Department[]
+  employees         Employee[]
+  projects          Project[]
+  calendars         Calendar[]
+  chatThreads       ChatThread[]
+  emailTemplates    EmailTemplate[]
+  leaveTypes        LeaveType[]
+  
+  @@map("companies")
+}
+
+model Role {
+  id                String      @id @default(cuid())
+  name              String
+  description       String?
+  permissions       String? // JSON stored as string
+  companyId         String
+  company           Company     @relation(fields: [companyId], references: [id])
+  
+  userRoles         UserRole[]
+  
+  @@unique([name, companyId])
+  @@map("roles")
+}
+
+model UserRole {
+  id                String      @id @default(cuid())
+  userId            String
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  roleId            String
+  role              Role        @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  assignedAt        DateTime    @default(now())
+  
+  @@unique([userId, roleId])
+  @@map("user_roles")
+}
+
+model Session {
+  id                String      @id @default(cuid())
+  sessionToken      String      @unique
+  userId            String
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt         DateTime
+  createdAt         DateTime    @default(now())
+  
+  @@map("sessions")
+}
+
+model Department {
+  id                String      @id @default(cuid())
+  name              String
+  nameAr            String?
+  code              String
+  description       String?
+  companyId         String
+  company           Company     @relation(fields: [companyId], references: [id])
+  parentId          String?
+  
+  employees         Employee[]
+  
+  @@unique([code, companyId])
+  @@map("departments")
+}
+
+model Employee {
+  id                String      @id @default(cuid())
+  userId            String      @unique
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  employeeCode      String      @unique
+  departmentId      String?
+  department        Department? @relation(fields: [departmentId], references: [id])
+  managerId         String?
+  position          String?
+  joinDate          DateTime
+  employmentType    String      @default("FULL_TIME")
+  status            String      @default("ACTIVE")
+  companyId         String
+  company           Company     @relation(fields: [companyId], references: [id])
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  
+  attendances       Attendance[]
+  leaves            Leave[]
+  payrolls          Payroll[]
+  
+  @@map("employees")
+}
+
+model Attendance {
+  id                String      @id @default(cuid())
+  employeeId        String
+  employee          Employee    @relation(fields: [employeeId], references: [id])
+  date              DateTime
+  checkIn           DateTime?
+  checkOut          DateTime?
+  status            String      @default("PRESENT")
+  workingHours      Float?
+  overtimeHours     Float?
+  notes             String?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  
+  @@unique([employeeId, date])
+  @@map("attendances")
+}
+
+model LeaveType {
+  id                String      @id @default(cuid())
+  name              String
+  nameAr            String?
+  code              String      @unique
+  daysAllowed       Int
+  isPaid            Boolean     @default(true)
+  requiresApproval  Boolean     @default(true)
+  requiresDocument  Boolean     @default(false)
+  description       String?
+  companyId         String
+  company           Company     @relation(fields: [companyId], references: [id])
+  
+  leaves            Leave[]
+  
+  @@map("leave_types")
+}
+
+model Leave {
+  id                String      @id @default(cuid())
+  employeeId        String
+  employee          Employee    @relation(fields: [employeeId], references: [id])
+  leaveTypeId       String
+  leaveType         LeaveType   @relation(fields: [leaveTypeId], references: [id])
+  startDate         DateTime
+  endDate           DateTime
+  totalDays         Float
+  reason            String
+  status            String      @default("PENDING")
+  approvedById      String?
+  approvalDate      DateTime?
+  rejectionReason   String?
+  documentUrl       String?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  
+  @@map("leaves")
+}
+
+model Notification {
+  id                String      @id @default(cuid())
+  userId            String
+  user              User        @relation(fields: [userId], references: [id])
+  type              String      @default("INFO")
+  priority          String      @default("NORMAL")
+  title             String
+  body              String
+  actionUrl         String?
+  metadata          String? // JSON stored as string
+  isRead            Boolean     @default(false)
+  readAt            DateTime?
+  isDismissed       Boolean     @default(false)
+  channels          String?     // JSON array stored as string
+  scheduledFor      DateTime?
+  sentAt            DateTime?
+  createdAt         DateTime    @default(now())
+  
+  @@map("notifications")
+}
+
+// Chat Models
+model ChatThread {
+  id                String      @id @default(cuid())
+  type              String      @default("DIRECT")
+  title             String?
+  description       String?
+  avatarUrl         String?
+  isArchived        Boolean     @default(false)
+  isPinned          Boolean     @default(false)
+  lastActivityAt    DateTime    @default(now())
+  createdById       String
+  projectId         String?
+  project           Project?    @relation(fields: [projectId], references: [id])
+  departmentId      String?
+  companyId         String
+  company           Company     @relation(fields: [companyId], references: [id])
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  
+  participants      ChatParticipant[]
+  messages          ChatMessage[]
+  
+  @@map("chat_threads")
+}
+
+model ChatParticipant {
+  id                String      @id @default(cuid())
+  threadId          String
+  thread            ChatThread  @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  userId            String
+  user              User        @relation(fields: [userId], references: [id])
+  role              String      @default("member")
+  lastReadAt        DateTime?
+  mentionCount      Int         @default(0)
+  notificationsMuted Boolean    @default(false)
+  joinedAt          DateTime    @default(now())
+  leftAt            DateTime?
+  
+  @@unique([threadId, userId])
+  @@map("chat_participants")
+}
+
+model ChatMessage {
+  id                String      @id @default(cuid())
+  threadId          String
+  thread            ChatThread  @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  senderId          String
+  sender            User        @relation(fields: [senderId], references: [id])
+  content           String
+  contentType       String      @default("TEXT")
+  attachmentUrl     String?
+  attachmentName    String?
+  attachmentSize    Int?
+  isEdited          Boolean     @default(false)
+  isDeleted         Boolean     @default(false)
+  isPinned          Boolean     @default(false)
+  metadata          String?     // JSON stored as string
+  replyToId         String?
+  replyTo           ChatMessage? @relation("MessageReplies", fields: [replyToId], references: [id])
+  replies           ChatMessage[] @relation("MessageReplies")
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  
+  reads             MessageRead[]
+  
+  @@map("chat_messages")
+}
+
+model MessageRead {
+  id                String      @id @default(cuid())
+  messageId         String
+  message           ChatMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  userId            String
+  user              User        @relation(fields: [userId], references: [id])
+  readAt            DateTime    @default(now())
+  
+  @@unique([messageId, userId])
+  @@map("message_reads")
+}
+
+// Email Templates
+model EmailTemplate {
+  id                String      @id @default(cuid())
+  name              String      @unique
+  subject           String
+  body              String
+  category          String
+  variables         String?     // JSON stored as string
+  isActive          Boolean     @default(true)
+  companyId         String?
+  company           Company?    @relation(fields: [companyId], references: [id])
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  
+  @@map("email_templates")
+}
+
+model EmailLog {
+  id                String      @id @default(cuid())
+  to                String
+  from              String
+  subject           String
+  body              String
+  status            String      @default("PENDING")
+  provider          String?
+  messageId         String?
+  error             String?
+  metadata          String?     // JSON stored as string
+  sentAt            DateTime?
+  userId            String?
+  user              User?       @relation(fields: [userId], references: [id])
+  createdAt         DateTime    @default(now())
+  
+  @@map("email_logs")
+}
+
+// Screen Share
+model ScreenShareSession {
+  id                String      @id @default(cuid())
+  requesterId       String
+  requester         User        @relation("Requestor", fields: [requesterId], references: [id])
+  targetId          String
+  target            User        @relation("Target", fields: [targetId], references: [id])
+  status            String      @default("PENDING")
+  sessionToken      String      @unique
+  roomId            String      @unique
+  consentScope      String?
+  consentGivenAt    DateTime?
+  startedAt         DateTime?
+  endedAt           DateTime?
+  duration          Int?
+  metadata          String?     // JSON stored as string
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  
+  @@map("screen_share_sessions")
+}
+
+// Projects
+model Project {
+  id                String      @id @default(cuid())
+  name              String
+  code              String      @unique
+  description       String?
+  status            String      @default("PLANNING")
+  clientId          String?
+  startDate         DateTime
+  endDate           DateTime?
+  budget            Float?
+  budgetCurrency    String?
+  estimatedHours    Int?
+  actualHours       Int?
+  progress          Float       @default(0)
+  companyId         String
+  company           Company     @relation(fields: [companyId], references: [id])
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  
+  tasks             Task[]
+  members           ProjectMember[]
+  milestones        Milestone[]
+  workLogs          WorkLog[]
+  chatThreads       ChatThread[]
+  
+  @@map("projects")
+}
+
+model ProjectMember {
+  id                String      @id @default(cuid())
+  projectId         String
+  project           Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId            String
+  user              User        @relation(fields: [userId], references: [id])
+  role              String      @default("member")
+  allocatedHours    Int?
+  hourlyRate        Float?
+  joinedAt          DateTime    @default(now())
+  leftAt            DateTime?
+  
+  @@unique([projectId, userId])
+  @@map("project_members")
+}
+
+model Task {
+  id                String      @id @default(cuid())
+  projectId         String
+  project           Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  milestoneId       String?
+  milestone         Milestone?  @relation(fields: [milestoneId], references: [id])
+  title             String
+  description       String?
+  status            String      @default("TODO")
+  priority          String      @default("MEDIUM")
+  assigneeId        String?
+  parentId          String?
+  parent            Task?       @relation("SubTasks", fields: [parentId], references: [id])
+  subTasks          Task[]      @relation("SubTasks")
+  estimatedMinutes  Int?
+  actualMinutes     Int?
+  dueDate           DateTime?
+  completedAt       DateTime?
+  labels            String?     // JSON array stored as string
+  metadata          String?     // JSON stored as string
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  
+  workLogs          WorkLog[]
+  
+  @@map("tasks")
+}
+
+model Milestone {
+  id                String      @id @default(cuid())
+  projectId         String
+  project           Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name              String
+  description       String?
+  dueDate           DateTime
+  completedAt       DateTime?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  
+  tasks             Task[]
+  
+  @@map("milestones")
+}
+
+model WorkLog {
+  id                String      @id @default(cuid())
+  projectId         String
+  project           Project     @relation(fields: [projectId], references: [id])
+  taskId            String?
+  task              Task?       @relation(fields: [taskId], references: [id])
+  userId            String
+  minutes           Int
+  description       String?
+  isBillable        Boolean     @default(true)
+  startedAt         DateTime
+  endedAt           DateTime?
+  screenshotUrls    String?     // JSON array stored as string
+  metadata          String?     // JSON stored as string
+  createdAt         DateTime    @default(now())
+  
+  @@map("work_logs")
+}
+
+// Calendar
+model Calendar {
+  id                String      @id @default(cuid())
+  name              String
+  description       String?
+  scope             String      @default("PERSONAL")
+  ownerId           String
+  owner             User        @relation(fields: [ownerId], references: [id])
+  companyId         String
+  company           Company     @relation(fields: [companyId], references: [id])
+  color             String      @default("#2D6DF6")
+  isDefault         Boolean     @default(false)
+  isPublic          Boolean     @default(false)
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  
+  events            Event[]
+  
+  @@map("calendars")
+}
+
+model Event {
+  id                String      @id @default(cuid())
+  calendarId        String
+  calendar          Calendar    @relation(fields: [calendarId], references: [id])
+  type              String      @default("MEETING")
+  title             String
+  description       String?
+  location          String?
+  meetingUrl        String?
+  startAt           DateTime
+  endAt             DateTime
+  isAllDay          Boolean     @default(false)
+  isRecurring       Boolean     @default(false)
+  recurringRule     String?
+  color             String?
+  metadata          String?     // JSON stored as string
+  createdById       String
+  createdBy         User        @relation(fields: [createdById], references: [id])
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  
+  attendees         EventAttendee[]
+  reminders         EventReminder[]
+  
+  @@map("events")
+}
+
+model EventAttendee {
+  id                String      @id @default(cuid())
+  eventId           String
+  event             Event       @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId            String
+  user              User        @relation(fields: [userId], references: [id])
+  status            String      @default("invited")
+  isOrganizer       Boolean     @default(false)
+  responseNote      String?
+  respondedAt       DateTime?
+  
+  @@unique([eventId, userId])
+  @@map("event_attendees")
+}
+
+model EventReminder {
+  id                String      @id @default(cuid())
+  eventId           String
+  event             Event       @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  minutesBefore     Int
+  channel           String      @default("inapp")
+  
+  @@map("event_reminders")
+}
+
+// AI Analytics
+model ActivityTelemetry {
+  id                String      @id @default(cuid())
+  userId            String
+  user              User        @relation(fields: [userId], references: [id])
+  sessionId         String
+  timestamp         DateTime
+  keystrokes        Int         @default(0)
+  mouseDistance     Float       @default(0)
+  mouseClicks       Int         @default(0)
+  scrollDistance    Float       @default(0)
+  windowSwitches    Int         @default(0)
+  idleSeconds       Int         @default(0)
+  activeApp         String?
+  activeCategory    String?
+  isMeeting         Boolean     @default(false)
+  metadata          String?     // JSON stored as string
+  
+  @@index([userId, timestamp])
+  @@map("activity_telemetry")
+}
+
+model ActivityAggregate {
+  id                String      @id @default(cuid())
+  userId            String
+  user              User        @relation(fields: [userId], references: [id])
+  date              DateTime
+  totalKeystrokes   Int         @default(0)
+  totalClicks       Int         @default(0)
+  totalDistance     Float       @default(0)
+  totalActiveTime   Int         @default(0)
+  totalIdleTime     Int         @default(0)
+  totalMeetingTime  Int         @default(0)
+  focusScore        Float?
+  productivityScore Float?
+  contextSwitches   Int         @default(0)
+  afterHoursTime    Int         @default(0)
+  
+  @@unique([userId, date])
+  @@index([date])
+  @@map("activity_aggregates")
+}
+
+model AIInsight {
+  id                String      @id @default(cuid())
+  type              String      // 'prediction', 'anomaly', 'recommendation', 'analysis'
+  category          String      // 'productivity', 'wellbeing', 'team', 'activity'
+  userId            String?
+  user              User?       @relation(fields: [userId], references: [id])
+  teamId            String?
+  severity          String      @default("info") // 'info', 'warning', 'critical'
+  title             String
+  description       String
+  metadata          String?     // JSON stored as string
+  confidence        Float?
+  isResolved        Boolean     @default(false)
+  isDismissed       Boolean     @default(false)
+  validUntil        DateTime
+  createdAt         DateTime    @default(now())
+  
+  @@index([userId, type])
+  @@map("ai_insights")
+}
+
+// Audit Log
+model AuditLog {
+  id                String      @id @default(cuid())
+  userId            String
+  action            String
+  entityType        String
+  entityId          String
+  oldValues         String?     // JSON stored as string
+  newValues         String?     // JSON stored as string
+  ipAddress         String?
+  userAgent         String?
+  metadata          String?     // JSON stored as string
+  createdAt         DateTime    @default(now())
+  
+  @@index([userId, entityType, entityId])
+  @@map("audit_logs")
+}
+
+// Payroll
+model Payroll {
+  id                String      @id @default(cuid())
+  employeeId        String
+  employee          Employee    @relation(fields: [employeeId], references: [id])
+  month             DateTime    // First day of the month
+  baseSalary        Float
+  netSalary         Float
+  totalAdditions    Float       @default(0)
+  totalDeductions   Float       @default(0)
+  status            String      @default("PENDING") // PENDING, PROCESSED, PAID
+  paymentDate       DateTime?
+  paymentMethod     String?
+  notes             String?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  
+  items             PayrollItem[]
+  
+  @@unique([employeeId, month])
+  @@map("payrolls")
+}
+
+model PayrollItem {
+  id                String      @id @default(cuid())
+  payrollId         String
+  payroll           Payroll     @relation(fields: [payrollId], references: [id], onDelete: Cascade)
+  type              String      // ALLOWANCE, DEDUCTION, BONUS, OVERTIME, TAX, INSURANCE
+  name              String
+  amount            Float
+  description       String?
+  isTaxable         Boolean     @default(true)
+  createdAt         DateTime    @default(now())
+  
+  @@map("payroll_items")
+}
