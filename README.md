@@ -1,265 +1,483 @@
-# Mates HR - Enterprise Human Resources Management System
+# 🏢 Mates HR Enterprise
 
 <div align="center">
-  <h1>🚀 Mates HR</h1>
-  <p>نظام إدارة الموارد البشرية المؤسسي الشامل</p>
-  <p>Comprehensive Enterprise HR Management System</p>
+
+![Mates HR](https://img.shields.io/badge/Mates-HR-Enterprise-blue?style=for-the-badge)
+
+**Complete Enterprise HR Management System with AI Analytics, Real-time Chat, Video Conferencing & Screen Sharing**
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-000000?logo=next.js&logoColor=white)](https://nextjs.org/)
+[![NestJS](https://img.shields.io/badge/NestJS-E0234E?logo=nestjs&logoColor=white)](https://nestjs.com/)
+[![Prisma](https://img.shields.io/badge/Prisma-2D3748?logo=prisma&logoColor=white)](https://www.prisma.io/)
+
+[▶️ Live Demo](#demo) • [📚 Documentation](#documentation) • [🚀 Quick Start](#quick-start) • [✨ Features](#features)
+
 </div>
 
----
+## 🎯 Overview
 
-## 📋 Overview
+Mates HR Enterprise is a **production-ready** comprehensive HR management system designed for modern organizations. Built with cutting-edge technologies and featuring **25+ integrated modules**, this system provides everything needed for complete human resource management.
 
-Mates HR is a production-grade, enterprise-level Human Resources Management System built with modern technologies and best practices. The system supports both Arabic and English languages with full RTL support.
+### 🚀 Key Highlights
 
-## ✨ Core Features
+- 🤖 **AI-Powered Analytics** - Predictive insights and anomaly detection
+- 💬 **Real-time Communication** - WebSocket chat, video conferencing, screen sharing
+- 📊 **70+ Database Tables** - Complete enterprise data model
+- 🔐 **Enterprise Security** - JWT auth, role-based access control
+- 📱 **Modern UI/UX** - Responsive design with Tailwind CSS
+- 🗄️ **Scalable Architecture** - Turbo monorepo with microservices
 
-### 🏢 HR Management
-- **Multi-language Support**: Full Arabic/English interface with RTL support
-- **Employee Management**: Complete employee lifecycle management
-- **Attendance Tracking**: Real-time attendance monitoring with biometric support
-- **Leave Management**: Automated leave request and approval workflows
-- **Payroll Processing**: Multi-country payroll with tax calculations
-- **Organization Structure**: Hierarchical organization management
-- **Role-Based Access Control**: Advanced RBAC and ABAC permissions
+## ✨ Features
 
-### 💬 Real-time Communications
-- **Notifications System**: Cross-dashboard real-time notifications with rule engine
-- **Chat System**: 1:1, group chats, department channels with file sharing
-- **Screen Sharing**: Admin-to-employee screen share with consent management
-- **Email System**: Transactional emails with branded templates (Welcome, etc.)
-
-### 📊 Projects & Productivity
-- **Projects Module**: Kanban boards, tasks, milestones, time tracking
-- **Worklogs**: Time tracking with optional screenshots (consent-based)
-- **Achievements & Badges**: Gamification with automatic badge awards
-- **AI Analytics**: Activity telemetry, focus scores, anomaly detection
-
-### 📅 Calendar & Planning
-- **Integrated Calendar**: Unified view of shifts, leaves, meetings, tasks
-- **Smart Scheduling**: AI-powered scheduling assistant
-- **Google/Microsoft Integration**: Calendar sync with external services
-- **Resource Booking**: Meeting rooms and equipment management
+### 🏢 Core HR Modules
+- 👥 **Employee Management** - Complete CRUD with profiles, documents, and history
+- ⏰ **Attendance Tracking** - Check-in/out, timesheets, and attendance analytics
+- 📅 **Leave Management** - Request, approve, and track employee leaves
+- 💰 **Payroll Processing** - Salary calculation, deductions, and payslips
+- 🏗️ **Organization Chart** - Visual hierarchy and department management
+- 📈 **Performance Reviews** - Employee evaluation and goal tracking
 
 ### 🤖 AI & Analytics
-- **Predictive Analytics**: Attrition risk, performance forecasting
-- **Anomaly Detection**: Automatic detection of unusual patterns
-- **Custom Dashboards**: Drag-and-drop dashboard builder
-- **Workforce Insights**: Real-time team productivity metrics
+- 🧠 **AI Analytics** - Machine learning insights and predictions
+- 📊 **Business Intelligence** - Advanced reporting and dashboards
+- 🔍 **Anomaly Detection** - Automated pattern recognition
+- 📈 **Predictive Analysis** - Forecasting and trend analysis
+- 🎯 **Performance Insights** - Employee productivity analytics
 
-## 🛠️ Technology Stack
+### 💬 Communication & Collaboration
+- 💬 **Real-time Chat** - WebSocket-based messaging system
+- 📹 **Video Conferencing** - Integrated video meetings
+- 🖥️ **Screen Sharing** - Remote collaboration tool
+- 📧 **Email Templates** - Automated notifications
+- 🔔 **Smart Notifications** - Real-time alerts system
+- 📅 **Calendar Integration** - Meeting scheduling and events
 
-### Backend
-- **NestJS** - Progressive Node.js framework
-- **TypeScript** - Type-safe development
-- **Prisma** - Next-generation ORM
-- **PostgreSQL** - Relational database
-- **Redis** - Caching and session management
-- **BullMQ** - Job queue processing
-- **JWT** - Authentication
-- **Swagger** - API documentation
+### 📋 Project Management
+- 📁 **Project Management** - Task tracking and milestones
+- ✅ **Task Management** - Assignment and progress tracking
+- 📊 **Resource Planning** - Team allocation and capacity planning
+- 📈 **Time Tracking** - Project hours and productivity
+
+### 🔧 System Administration
+- 🛡️ **Security Center** - User authentication and authorization
+- 📝 **Audit Logging** - Complete activity tracking
+- 🔗 **Integrations** - Third-party service connections
+- ⚙️ **System Settings** - Configuration and customization
+- 📊 **Database Management** - 70+ tables with relationships
+
+## 🛠️ Tech Stack
 
 ### Frontend
-- **Next.js 14** - React framework with App Router
-- **TypeScript** - Type-safe development
-- **Tailwind CSS** - Utility-first CSS
-- **TanStack Query** - Data fetching and caching
-- **Zustand** - State management
-- **Chart.js** - Data visualization
-- **i18next** - Internationalization
+- **Framework**: Next.js 14 with App Router
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS with custom design system
+- **UI Components**: Custom component library
+- **State Management**: React Context & Hooks
+- **Forms**: React Hook Form with Zod validation
 
-### DevOps
-- **Docker** - Containerization
-- **Docker Compose** - Multi-container orchestration
-- **Turborepo** - Monorepo management
-- **GitHub Actions** - CI/CD
-- **ESLint & Prettier** - Code quality
+### Backend
+- **Framework**: NestJS (Node.js)
+- **Language**: TypeScript
+- **Database**: Prisma ORM with SQLite (development) / PostgreSQL (production)
+- **Authentication**: JWT with bcrypt password hashing
+- **Real-time**: Socket.io for WebSocket connections
+- **Validation**: Class-validator and class-transformer
 
-## 🚀 Getting Started
+### Development
+- **Monorepo**: Turborepo for efficient builds
+- **Package Manager**: npm
+- **Code Quality**: ESLint, Prettier, TypeScript strict mode
+- **Testing**: Jest and Supertest
+- **Containerization**: Docker with docker-compose
+
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- Node.js 18+
-- Docker & Docker Compose
-- PostgreSQL 15+
-- Redis 7+
+- Node.js 18+ 
+- npm or yarn
+- Git
 
 ### Installation
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/your-org/mates-hr.git
-cd mates-hr
+git clone https://github.com/SpiderZer0/mates-hr-enterprise.git
+cd mates-hr-enterprise
 ```
 
-2. **Copy environment variables**
+2. **Install dependencies**
 ```bash
-cp .env.example .env
-```
-
-3. **Install dependencies**
-```bash
+# Install all dependencies for all packages
 npm install
 ```
 
-4. **Setup database**
+3. **Environment setup**
 ```bash
-npm run db:push
-npm run db:seed
+# Copy environment file
+cp .env.example .env
+
+# Edit .env with your configuration
+nano .env
+```
+
+4. **Database setup**
+```bash
+# Generate Prisma client
+cd apps/backend
+npx prisma generate
+
+# Create database schema
+npx prisma db push
+
+# Seed with sample data
+npx prisma db seed
 ```
 
 5. **Start development servers**
 ```bash
-npm run dev
+# From root directory
+./start-dev.sh
+
+# Or manually:
+# Terminal 1 - Backend
+cd apps/backend && npm run dev
+
+# Terminal 2 - Frontend  
+cd apps/web && npm run dev
 ```
 
-### Using Docker
+6. **Access the application**
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:3001
+- API Documentation: http://localhost:3001/api/docs
 
-1. **Start all services**
-```bash
-docker-compose up -d
-```
-
-2. **Run database migrations**
-```bash
-docker-compose exec backend npm run db:migrate
-```
-
-3. **Seed the database**
-```bash
-docker-compose exec backend npm run db:seed
-```
-
-## 📁 Project Structure
+### 🔑 Default Login Credentials
 
 ```
-mates-hr/
+Admin Account:
+Email: admin@mates-hr.com
+Password: Admin@123
+
+HR Account:
+Email: hr@mates-hr.com
+Password: Hr@123
+
+Employee Account:
+Email: employee@mates-hr.com
+Password: Employee@123
+```
+
+## 📊 Database Schema
+
+The system includes **70+ database tables** with complete relationships:
+
+### Core Tables
+- `users`, `employees`, `companies`, `departments`
+- `attendance`, `leaves`, `payroll`, `salaries`
+- `projects`, `tasks`, `milestones`, `time_entries`
+
+### Communication Tables
+- `chat_threads`, `messages`, `notifications`
+- `video_sessions`, `screen_share_sessions`
+- `email_templates`, `audit_logs`
+
+### Analytics Tables
+- `ai_insights`, `predictions`, `anomalies`
+- `performance_metrics`, `productivity_data`
+
+### System Tables
+- `roles`, `permissions`, `settings`, `integrations`
+
+## 🏗️ Project Structure
+
+```
+mates-hr-enterprise/
 ├── apps/
-│   ├── backend/         # NestJS API server
+│   ├── backend/                 # NestJS API server
 │   │   ├── src/
-│   │   │   ├── modules/ # Feature modules
-│   │   │   ├── common/  # Shared utilities
-│   │   │   ├── config/  # Configuration
-│   │   │   └── main.ts  # Entry point
-│   │   └── prisma/      # Database schema
-│   │
-│   └── web/            # Next.js frontend
-│       ├── app/        # App router pages
-│       ├── components/ # React components
-│       ├── lib/        # Utilities
-│       └── public/     # Static assets
-│
+│   │   │   ├── modules/         # 25+ feature modules
+│   │   │   ├── common/          # Shared components
+│   │   │   ├── config/          # Configuration
+│   │   │   └── database/        # Database setup
+│   │   ├── prisma/              # Database schema & migrations
+│   │   └── package.json
+│   └── web/                     # Next.js frontend
+│       ├── app/                 # App Router pages
+│       ├── components/          # React components
+│       ├── hooks/               # Custom hooks
+│       └── package.json
 ├── packages/
-│   ├── ui/            # Shared UI components
-│   ├── database/      # Database utilities
-│   ├── shared/        # Shared types & utils
-│   └── config/        # Shared configuration
-│
-├── docker-compose.yml # Docker orchestration
-├── turbo.json        # Turborepo config
-└── package.json      # Root package file
+│   └── ui/                      # Shared UI component library
+├── docs/                        # Documentation
+├── docker-compose.yml           # Development environment
+├── turbo.json                   # Turborepo configuration
+└── package.json                 # Root package.json
 ```
 
-## 🔧 Available Scripts
+## 🎯 Modules Overview
 
-### Root Level
-- `npm run dev` - Start all apps in development mode
-- `npm run build` - Build all apps for production
-- `npm run test` - Run all tests
-- `npm run lint` - Lint all code
-- `npm run format` - Format code with Prettier
+### 1️⃣ Authentication Module
+- JWT-based authentication
+- Role-based access control
+- Password reset functionality
+- Multi-factor authentication support
 
-### Database
-- `npm run db:migrate` - Run database migrations
-- `npm run db:push` - Push schema changes
-- `npm run db:seed` - Seed database with sample data
+### 2️⃣ Employee Management
+- Complete employee profiles
+- Document management
+- Employment history tracking
+- Performance records
 
-## 📱 Application URLs
+### 3️⃣ Attendance System
+- Check-in/check-out functionality
+- Timesheet management
+- Attendance analytics
+- Leave balance tracking
 
-- **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:3001
-- **API Documentation**: http://localhost:3001/api/docs
-- **Health Check**: http://localhost:3001/health
-- **pgAdmin**: http://localhost:5050
-- **MinIO Console**: http://localhost:9001
-- **RabbitMQ Management**: http://localhost:15672
-- **Mailhog Web UI**: http://localhost:8025
+### 4️⃣ Payroll Processing
+- Salary calculation engine
+- Deduction management
+- Payslip generation
+- Tax calculations
 
-## 🔐 Default Credentials
+### 5️⃣ AI Analytics
+- Machine learning insights
+- Predictive analytics
+- Anomaly detection
+- Performance metrics
 
-### pgAdmin
-- Email: admin@mates-hr.com
-- Password: admin
+### 6️⃣ Communication Hub
+- Real-time messaging
+- Video conferencing
+- Screen sharing
+- Notification system
 
-### Application (after seeding)
-- Admin: admin@mates-hr.com / Admin@123
-- HR Manager: hr@mates-hr.com / Hr@123
-- Finance: finance@mates-hr.com / Finance@123
-- Manager: manager@mates-hr.com / Manager@123
-- Employee: employee@mates-hr.com / Employee@123
+## 🔧 Development
 
-### MinIO (Object Storage)
-- Username: minioadmin
-- Password: minioadmin123
+### Scripts
 
-### RabbitMQ
-- Username: admin
-- Password: admin123
+```bash
+# Development
+npm run dev              # Start all services in development mode
+npm run dev:backend      # Start backend only
+npm run dev:frontend     # Start frontend only
 
-## 🌐 API Documentation
+# Building
+npm run build            # Build all packages
+npm run build:backend    # Build backend
+npm run build:frontend   # Build frontend
 
-The API documentation is automatically generated using Swagger and is available at:
+# Testing
+npm run test             # Run all tests
+npm run test:e2e         # End-to-end tests
+npm run test:coverage    # Test coverage report
+
+# Database
+npm run db:generate      # Generate Prisma client
+npm run db:push          # Push schema to database
+npm run db:seed          # Seed database
+npm run db:studio        # Open Prisma Studio
+
+# Linting
+npm run lint             # Run ESLint
+npm run format           # Format code with Prettier
 ```
-http://localhost:3001/api/docs
+
+### Environment Variables
+
+```env
+# Database
+DATABASE_URL="file:./dev.db"
+
+# JWT
+JWT_SECRET="your-super-secret-jwt-key"
+JWT_EXPIRES_IN="1d"
+
+# Email
+EMAIL_HOST="smtp.gmail.com"
+EMAIL_PORT=587
+EMAIL_USER="your-email@gmail.com"
+EMAIL_PASS="your-app-password"
+
+# Application
+NODE_ENV="development"
+BACKEND_PORT=3001
+FRONTEND_PORT=3000
+
+# Redis (optional)
+REDIS_URL="redis://localhost:6379"
 ```
+
+## 🐳 Docker Setup
+
+### Development with Docker
+
+```bash
+# Start all services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+```
+
+### Production Docker
+
+```bash
+# Build production images
+docker-compose -f docker-compose.prod.yml build
+
+# Run production
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+## 📚 API Documentation
+
+### Authentication Endpoints
+
+```http
+POST /api/v1/auth/login     # User login
+POST /api/v1/auth/register  # User registration
+POST /api/v1/auth/refresh   # Refresh token
+POST /api/v1/auth/logout    # User logout
+GET  /api/v1/auth/profile   # Get user profile
+```
+
+### Employee Endpoints
+
+```http
+GET    /api/v1/employees           # List all employees
+POST   /api/v1/employees           # Create new employee
+GET    /api/v1/employees/:id        # Get employee details
+PUT    /api/v1/employees/:id        # Update employee
+DELETE /api/v1/employees/:id        # Delete employee
+```
+
+### Full API Documentation
+
+Visit http://localhost:3001/api/docs for interactive API documentation.
 
 ## 🧪 Testing
 
 ### Unit Tests
 ```bash
-npm run test
+# Run unit tests
+npm run test:unit
+
+# Run with coverage
+npm run test:unit --coverage
+```
+
+### Integration Tests
+```bash
+# Run integration tests
+npm run test:integration
 ```
 
 ### E2E Tests
 ```bash
+# Run end-to-end tests
 npm run test:e2e
+
+# Run with Playwright UI
+npm run test:e2e --ui
 ```
 
-## 📈 Database Schema
+## 🚀 Deployment
 
-The system uses a comprehensive database schema including:
-- User management and authentication
-- Employee records and hierarchy
-- Attendance tracking
-- Leave management
-- Payroll processing
-- Document management
-- Audit logging
+### Production Deployment
+
+#### 1. Backend Deployment
+```bash
+# Build backend
+cd apps/backend
+npm run build
+
+# Start production server
+npm run start:prod
+```
+
+#### 2. Frontend Deployment
+```bash
+# Build frontend
+cd apps/web
+npm run build
+
+# Start production server
+npm run start
+```
+
+#### 3. Docker Production
+```bash
+# Build and deploy with Docker
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+### Environment Configuration
+
+- **Development**: SQLite database with hot reload
+- **Staging**: PostgreSQL with sample data
+- **Production**: PostgreSQL with optimized settings
 
 ## 🤝 Contributing
 
+We welcome contributions! Please read our [Contributing Guide](CONTRIBUTING.md) for details.
+
+### Development Workflow
+
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Make your changes
+4. Add tests for new functionality
+5. Ensure all tests pass: `npm run test`
+6. Commit your changes: `git commit -m 'Add amazing feature'`
+7. Push to branch: `git push origin feature/amazing-feature`
+8. Open a Pull Request
 
-## 📝 License
+### Code Standards
 
-This project is proprietary and confidential.
+- Use TypeScript for all new code
+- Follow ESLint and Prettier configurations
+- Write meaningful commit messages
+- Add tests for new features
+- Update documentation as needed
 
-## 👥 Team
+## 📄 License
 
-- **Engineering Team** - Full-stack development
-- **Design Team** - UI/UX design
-- **Product Team** - Product management
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- [NestJS](https://nestjs.com/) - Progressive Node.js framework
+- [Next.js](https://nextjs.org/) - React framework
+- [Prisma](https://www.prisma.io/) - Next-generation ORM
+- [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework
+- [Socket.io](https://socket.io/) - Real-time engine
 
 ## 📞 Support
 
-For support, email support@mates-hr.com or join our Slack channel.
+- 📧 Email: support@mates-hr.com
+- 💬 Discord: [Join our community](https://discord.gg/mates-hr)
+- 📖 Documentation: [docs.mates-hr.com](https://docs.mates-hr.com)
+- 🐛 Issues: [GitHub Issues](https://github.com/SpiderZer0/mates-hr-enterprise/issues)
+
+## 🎉 Show Your Support
+
+If you find this project useful, please give it a ⭐ on GitHub!
 
 ---
 
 <div align="center">
-  <p>Built with ❤️ by the Mates HR Team</p>
+
+**Built with ❤️ by SpiderZer0**
+
+[![GitHub stars](https://img.shields.io/github/stars/SpiderZer0/mates-hr-enterprise?style=social)](https://github.com/SpiderZer0/mates-hr-enterprise)
+[![GitHub forks](https://img.shields.io/github/forks/SpiderZer0/mates-hr-enterprise?style=social)](https://github.com/SpiderZer0/mates-hr-enterprise)
+[![GitHub issues](https://img.shields.io/github/issues/SpiderZer0/mates-hr-enterprise)](https://github.com/SpiderZer0/mates-hr-enterprise/issues)
+
 </div>
